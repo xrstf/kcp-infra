@@ -10,6 +10,9 @@ ENV KUBECTL_VERSION=1.33.8 \
     # the Helm version installed into this image.
     # https://github.com/helm/helm/releases
     HELM_VERSION=3.19.5 \
+    # the httest version installed into this image.
+    # https://codeberg.org/xrstf/httest/releases
+    HTTEST_VERSION=0.3.4 \
     # the kubeconform version installed into this image.
     # https://github.com/yannh/kubeconform/releases
     KUBECONFORM_VERSION=0.7.0
@@ -21,6 +24,12 @@ WORKDIR /tmp
 
 RUN curl --fail -L https://get.helm.sh/helm-v${HELM_VERSION}-linux-$(dpkg --print-architecture).tar.gz | tar -xzO linux-$(dpkg --print-architecture)/helm > helm && \
     chmod +x helm
+
+# httest is usually installed per-repo, but since Codeberg is known to be often
+# DDoSed by nefarious actors, we install it here to avoid stopping our CI pipelines
+# when they are under attack.
+RUN curl --fail -Lo httest https://codeberg.org/xrstf/httest/releases/download/v${HTTEST_VERSION}/httest_${HTTEST_VERSION}_linux_$(dpkg --print-architecture).tar.gz && \
+    chmod +x httest
 
 RUN curl --fail -Lo kubectl https://dl.k8s.io/release/v${KUBECTL_VERSION}/bin/linux/$(dpkg --print-architecture)/kubectl && \
     chmod +x kubectl
